@@ -1,1 +1,52 @@
+<!--
+  Modèle de référence de l'ordre de mission.
+  Ce fichier n'est PAS utilisé comme document statique : sa structure est
+  reproduite dynamiquement par js/ordres.js (générateur d'ordres).
+  Il sert uniquement de gabarit administratif de référence.
+  Footer obligatoire et non modifiable :
+    Créé par Inspecteur Limengo Daniel (Pmiller) 2026
+-->
+<template id="tpl-ordre-mission">
+  <div class="a4 om-doc">
+    <div class="page">
+      <div class="om-entete">
+        <div class="om-structure">{{STRUCTURE}}</div>
+        <div class="om-adresse">{{ADRESSE}}</div>
+      </div>
 
+      <div class="om-titre">{{TITRE}} N° {{NUMERO}}</div>
+
+      <p class="om-intro">
+        {{INTRO}}
+        <strong>{{ENTREPRISES}}</strong>
+        {{INTRO_SUITE}} <strong>{{LIEU_PROVINCE}}</strong>.
+        Il s'agit de :
+      </p>
+
+      <div class="om-liste-agents">{{AGENTS}}</div>
+
+      <div class="om-section-titre">{{OBJET_TITRE}}</div>
+      <ol class="objet-items">{{OBJET_POINTS}}</ol>
+
+      <div class="om-infos">
+        <p><strong>DURÉE DE LA MISSION :</strong> {{DUREE}}</p>
+        <p><strong>DATE DE DÉBUT :</strong> {{DATE_DEBUT}}</p>
+        <p><strong>DATE DE CLÔTURE :</strong> {{DATE_FIN}}</p>
+        <p><strong>IMPUTATION :</strong> {{IMPUTATION}}</p>
+      </div>
+
+      <p class="om-formule">{{FORMULE}}</p>
+
+      <p class="om-lieu-date">Fait à {{LIEU}}, le {{DATE_SIGNATURE}}</p>
+
+      <div class="om-signature">
+        <div class="om-signataire">{{SIGNATAIRE_NOM}}</div>
+        <div class="om-fonction">{{SIGNATAIRE_FONCTION}}</div>
+      </div>
+
+      <div class="om-qr qr-box">{{QR_CODE}}<span>Vérification : {{NUMERO}}</span></div>
+
+      <div class="om-pied">{{PIED_PAGE}}</div>
+    </div>
+  </div>
+</template>
