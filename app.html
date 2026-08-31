@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a2a6b" />
+  <meta name="description" content="Système de Gestion et de Planification des Missions de l'Inspection Générale du Travail RDC" />
+  <title>Système de Gestion et de Planification des Missions de l'Inspection Générale du Travail RDC</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <link rel="stylesheet" href="./css/print.css" />
+</head>
+<body>
+  <div id="app-shell">
+    <div class="app-layout">
+      <aside class="sidebar" id="sidebar">
+        <!-- construit par app.js -->
+        <div style="padding:16px;color:#93a6d0;font-size:13px">Chargement...</div>
+      </aside>
+
+      <div class="sb-backdrop"></div>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="burger" id="burger" aria-label="Menu"><span class="ic-svg" data-icon="menu"></span></button>
+          <div class="tb-left" id="tb-left">
+            <img class="tb-logo" src="./assets/logo/logo.png" alt="IGT RDC" />
+            <div class="tb-app">
+              <div class="n">IGT RDC</div>
+              <div class="s">Gestion des missions</div>
+            </div>
+          </div>
+          <div class="tb-title" id="tb-title">Tableau de bord</div>
+          <div class="tb-right">
+            <div class="tb-clk" id="tb-clk">
+              <span class="ic-svg" data-icon="calendar" style="color:#0B2E6D"></span>
+              <div>
+                <div class="d" id="tb-date">—</div>
+                <div class="t" id="tb-time">--:--:--</div>
+              </div>
+            </div>
+            <span id="net-chip" class="chip online"></span>
+            <button class="iconbtn" id="theme-toggle" title="Basculer thème clair / sombre" aria-label="Thème"></button>
+            <button class="iconbtn" id="bell" title="Notifications" aria-label="Notifications"><span class="dot" id="bell-dot" style="display:none"></span></button>
+            <div class="tb-user" id="tb-user">
+              <div class="tb-avatar" id="tb-avatar">AD</div>
+              <div class="n" id="tb-username">Administrateur</div>
+              <span class="ic-svg" data-icon="chevron_down" style="color:#6B7280"></span>
+            </div>
+          </div>
+        </header>
+        <div class="content">
+          <div id="route-view"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="print-root"></div>
+  <div id="toasts"></div>
+
+  <script>window.IGT_AUTH_PAGE = false;</script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/qrcode-lib.js"></script>
+  <script src="./js/qr.js"></script>
+  <script src="./js/db.js"></script>
+  <script src="./js/audit.js"></script>
+  <script src="./js/auth.js"></script>
+  <script src="./js/parametres.js"></script>
+  <script src="./js/sauvegarde.js"></script>
+  <script src="./js/alertes.js"></script>
+  <script src="./js/entreprises.js"></script>
+  <script src="./js/agents.js"></script>
+  <script src="./js/equipes.js"></script>
+  <script src="./js/ordres.js"></script>
+  <script src="./js/missions.js"></script>
+  <script src="./js/historique.js"></script>
+  <script src="./js/calendrier.js"></script>
+  <script src="./js/statistiques.js"></script>
+  <script src="./js/archives.js"></script>
+  <script src="./js/slides.js"></script>
+  <script src="./js/dashboard.js"></script>
+  <script src="./js/router.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

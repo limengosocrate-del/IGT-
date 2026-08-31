@@ -1,169 +1,100 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0B2F6B">
-  <meta name="description" content="Système de gestion et de planification des missions de l'Inspection Générale du Travail — République Démocratique du Congo">
-  <title>Connexion — IGT Missions RDC</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="assets/icons/favicon-64.png">
-  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B2E6D" />
+  <meta name="description" content="Système de Gestion et de Planification des Missions de l'Inspection Générale du Travail RDC" />
+  <title>Système de Gestion et de Planification des Missions de l'Inspection Générale du Travail RDC</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/responsive.css" />
 </head>
-<body class="page-login">
+<body class="login-body">
 
-  <main class="login-wrap">
-    <section class="login-card" aria-labelledby="titre-login">
-      <!-- Bande décorative aux couleurs du drapeau RDC -->
-      <div class="login-bande" aria-hidden="true">
-        <span class="b-bleu"></span><span class="b-jaune"></span><span class="b-rouge"></span>
+  <div class="login-shell">
+    <section class="login-right">
+      <div class="login-card">
+        <!-- Bande drapeau RDC en haut -->
+        <div class="lc-flag" aria-hidden="true">
+          <span class="lf-b"></span><span class="lf-y"></span><span class="lf-r"></span>
+        </div>
+
+        <!-- Logo officiel -->
+        <div class="lc-logo">
+          <img src="./assets/logo/official.png" alt="IGT RDC — République Démocratique du Congo" />
+        </div>
+
+        <h1 class="lc-welcome">Système de Gestion et de Planification des Missions</h1>
+        <p class="lc-sub">Inspection Générale du Travail — République Démocratique du Congo</p>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="login-user">Identifiant</label>
+            <div class="input-affix">
+              <span class="ai"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+              <input type="text" id="login-user" name="utilisateur" placeholder="Identifiant" autocomplete="username" />
+            </div>
+            <div class="err" id="err-user"></div>
+          </div>
+          <div class="field">
+            <label for="login-pass">Mot de passe</label>
+            <div class="input-affix">
+              <span class="ai"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+              <input type="password" id="login-pass" name="motdepasse" placeholder="Mot de passe sécurisé" autocomplete="current-password" />
+              <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Afficher / masquer le mot de passe"><svg id="pw-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+            <div class="err" id="err-pass"></div>
+          </div>
+          <div class="err" id="err-general" style="margin-bottom:14px;"></div>
+          <button type="submit" class="btn blk" id="btn-login">Se connecter</button>
+        </form>
+
+        <div class="lc-reserved">Accès réservé au Gestionnaire Administrateur</div>
+
+        <div class="lc-verify">
+          <a href="#" id="verify-link">Vérifier un ordre de mission (QR Code)</a>
+        </div>
       </div>
-
-      <!-- En-tête institutionnel : logo officiel (image, non recréé en texte) -->
-      <header class="login-entete">
-        <img class="login-logo-img" src="assets/img/logo-igt.png"
-             alt="République Démocratique du Congo — Ministère de l'Emploi et Travail — Inspection Générale du Travail"
-             width="640" height="144" fetchpriority="high">
-      </header>
-
-      <h1 class="login-title" id="titre-login">
-        Système de Gestion et de<br>Planification<br>des Missions
-      </h1>
-      <p class="login-sub">Inspection Générale du Travail — République<br>Démocratique du Congo</p>
-
-      <form id="form-login" novalidate>
-        <div class="field">
-          <label for="utilisateur">Identifiant</label>
-          <div class="input-icone">
-            <span class="ii-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
-            </span>
-            <input class="input input--avec-icone" type="text" id="utilisateur" name="utilisateur"
-                   autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"
-                   inputmode="text" placeholder="Identifiant" required>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="motdepasse">Mot de passe</label>
-          <div class="input-icone">
-            <span class="ii-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-            </span>
-            <input class="input input--avec-icone input--mdp" type="password" id="motdepasse" name="motdepasse"
-                   autocomplete="current-password" placeholder="Mot de passe sécurisé" required>
-            <button type="button" class="mdp-toggle" id="mdp-toggle" aria-label="Afficher le mot de passe"
-                    aria-pressed="false" title="Afficher / masquer le mot de passe">
-              <svg class="ico-oeil" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="ico-oeil-off" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4M6.6 6.6A17.6 17.6 0 0 0 2 11s3.5 7 10 7a10.9 10.9 0 0 0 5-1.2"/><path d="m2 2 20 20"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div id="login-erreur" class="alerte alerte--rouge" style="display:none" role="alert">
-          <span class="ico" aria-hidden="true">⛔</span><span></span>
-        </div>
-
-        <button type="submit" class="btn btn--lg btn--block btn--connexion" id="btn-connexion">
-          <span class="spinner" aria-hidden="true"></span>
-          <span class="btn-label">Se connecter</span>
-        </button>
-      </form>
-
-      <p class="login-acces">Accès réservé au <strong>Gestionnaire Administrateur</strong></p>
-
-      <p class="login-demo">
-        <span class="demo-pastille">Démo</span>
-        : identifiant <code>admin</code> — mot de passe <code>admin2026</code>
-      </p>
-
-      <p class="login-qr">
-        <a href="verifier-ordre.html">Vérifier un ordre de mission (QR Code)</a>
-      </p>
-
-      <footer class="login-footer">
-        © Créé par Inspecteur Limengo Daniel (Pmiller) — 2026
-      </footer>
+      <div class="lc-footer">© Créé par Inspecteur Limengo Daniel (Pmiller) — 2026</div>
     </section>
-  </main>
+  </div>
 
-  <div id="toast-container" aria-live="polite"></div>
+  <!-- Modale vérification QR -->
+  <div class="overlay" id="verify-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Vérifier un ordre de mission</h3>
+        <button class="xclose" data-close="verify-overlay">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="verify-code">Référence technique de l'ordre (QR Code)</label>
+          <input type="text" id="verify-code" placeholder="OM-IGT-2026-000001" />
+        </div>
+        <div id="verify-result"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn sec" data-close="verify-overlay">Fermer</button>
+        <button class="btn" id="verify-run">Vérifier</button>
+      </div>
+    </div>
+  </div>
 
-  <script src="js/utils.js"></script>
-  <script src="js/database.js"></script>
-  <script src="js/audit.js"></script>
-  <script src="js/notifications.js"></script>
-  <script src="js/auth.js"></script>
+  <!-- Toasts -->
+  <div id="toasts"></div>
+
+  <script>window.IGT_AUTH_PAGE = true;</script>
+  <script src="./js/qrcode-lib.js"></script>
+  <script src="./js/qr.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/db.js"></script>
+  <script src="./js/audit.js"></script>
+  <script src="./js/auth.js"></script>
   <script>
-    // Redirige si déjà connecté
-    if (Auth.estConnecte()) window.location.replace('dashboard.html');
-
-    // Initialise la base au premier chargement
-    DB.initialiser().catch((e) => {
-      console.error(e);
-      Utils.toast("Impossible d'initialiser la base locale : " + e.message, 'erreur', 8000);
-    });
-
-    // Afficher / masquer le mot de passe (icône œil)
-    const champMdp = document.getElementById('motdepasse');
-    const btnMdp = document.getElementById('mdp-toggle');
-    btnMdp.addEventListener('click', () => {
-      const visible = champMdp.type === 'text';
-      champMdp.type = visible ? 'password' : 'text';
-      btnMdp.setAttribute('aria-pressed', String(!visible));
-      btnMdp.setAttribute('aria-label', visible ? 'Afficher le mot de passe' : 'Masquer le mot de passe');
-      btnMdp.querySelector('.ico-oeil').hidden = !visible;
-      btnMdp.querySelector('.ico-oeil-off').hidden = visible;
-      champMdp.focus();
-    });
-
-    // Soumission du formulaire
-    document.getElementById('form-login').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const bouton = document.getElementById('btn-connexion');
-      const zoneErr = document.getElementById('login-erreur');
-      const afficherErreur = (message) => {
-        zoneErr.querySelector('span:last-child').textContent = message;
-        zoneErr.style.display = 'flex';
-        const premierChamp = document.getElementById('utilisateur');
-        (champMdp.value ? premierChamp : champMdp).focus();
-      };
-      zoneErr.style.display = 'none';
-
-      const utilisateur = document.getElementById('utilisateur').value.trim();
-      const motdepasse = champMdp.value;
-
-      if (!utilisateur) {
-        afficherErreur("Veuillez saisir votre identifiant.");
-        return;
-      }
-      if (!motdepasse) {
-        afficherErreur("Veuillez saisir votre mot de passe.");
-        return;
-      }
-
-      await Utils.avecChargement(bouton, async () => {
-        try {
-          await Auth.connexion(utilisateur, motdepasse);
-          window.location.href = 'dashboard.html';
-        } catch (err) {
-          // Message humain uniquement — jamais d'erreur technique brute
-          const message = (err && err.message)
-            ? err.message
-            : "Connexion impossible. Vérifiez votre identifiant et votre mot de passe, puis réessayez.";
-          afficherErreur(message);
-        }
-      });
-    });
-
-    // Enregistrement du Service Worker (PWA / hors ligne)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').catch((e) =>
-          console.warn('Service Worker non enregistré :', e));
-      });
-    }
+    Auth.init();
   </script>
 </body>
 </html>

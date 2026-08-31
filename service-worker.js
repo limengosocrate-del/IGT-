@@ -1,96 +1,100 @@
-/* =====================================================================
-   SERVICE WORKER — IGT Missions RDC
-   Stratégie :
-   - Pré-cache des ressources de l'application (app shell) à l'installation.
-   - Navigation / fichiers : stratégie "cache d'abord, réseau en secours"
-     avec mise à jour du cache en arrière-plan (stale-while-revalidate).
-   - Fonctionne totalement hors ligne après le premier chargement.
-   ===================================================================== */
+/* ==========================================================================
+   IGT MISSIONS RDC — service-worker.js — PWA / hors ligne
+   Chemins relatifs pour compatibilité GitHub Pages (sous-répertoire).
+   ========================================================================== */
 
-const CACHE_NAME = 'igt-missions-rdc-v3';
-const APP_SHELL = [
+const CACHE_VERSION = 'igt-missions-v2.0.0';
+const CACHE_NAME = CACHE_VERSION;
+
+const CORE_ASSETS = [
   './',
   './index.html',
-  './dashboard.html',
-  './verifier-ordre.html',
+  './app.html',
   './manifest.json',
-  './assets/img/logo-igt.png',
-  './css/style.css',
-  './css/dashboard.css',
+  './css/main.css',
   './css/responsive.css',
   './css/print.css',
-  './js/utils.js',
-  './js/vendor/qrcode-generator.js',
-  './js/qrcode.js',
-  './js/database.js',
+  './js/app.js',
   './js/auth.js',
-  './js/audit.js',
-  './js/notifications.js',
+  './js/db.js',
+  './js/router.js',
+  './js/dashboard.js',
   './js/entreprises.js',
   './js/agents.js',
   './js/equipes.js',
   './js/missions.js',
   './js/ordres.js',
   './js/historique.js',
+  './js/calendrier.js',
   './js/statistiques.js',
+  './js/archives.js',
+  './js/slides.js',
+  './js/alertes.js',
   './js/parametres.js',
-  './js/import-export.js',
-  './js/app.js',
-  './templates/ordre-mission.html',
+  './js/audit.js',
+  './js/sauvegarde.js',
+  './js/utils.js',
+  './data/provinces.json',
+  './assets/logo/logo.png',
+  './assets/logo/official.png',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
-  './assets/icons/icon-maskable-512.png',
-  './assets/icons/apple-touch-icon.png',
-  './assets/icons/favicon-64.png'
+  './assets/images/slides/01.jpg',
+  './assets/images/slides/02.jpg',
+  './assets/images/slides/03.jpg',
+  './assets/images/slides/04.jpg',
+  './assets/images/slides/05.jpg',
+  './assets/images/slides/06.jpg',
+  './assets/images/slides/07.jpg',
+  './assets/images/slides/08.jpg',
+  './assets/images/slides/09.jpg',
+  './assets/images/slides/10.jpg'
 ];
 
-// Installation : mise en cache de l'app shell
+/* Installer : mettre en cache le noyau */
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-      .catch((err) => console.warn('[SW] App shell partiellement mis en cache :', err))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
   );
 });
 
-// Activation : suppression des anciens caches
+/* Activer : supprimer les anciens caches (changement de version) */
 self.addEventListener('activate', (event) => {
+  const keysToDelete = [CACHE_NAME];
   event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
-      ))
-      .then(() => self.clients.claim())
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k.startsWith('igt-missions-') && k !== CACHE_NAME).map((k) => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
 });
 
-// Stratégie stale-while-revalidate pour les requêtes GET locales
+/* Fetch : stratégie cache-first puis réseau (correctif réseau) */
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  const url = new URL(req.url);
-  // Ne pas intercepter des origines tierces non listées (laisser le navigateur gérer)
-  if (url.origin !== self.location.origin) return;
-
   event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((cached) => {
-      const networkFetch = fetch(req)
-        .then((response) => {
-          if (response && response.status === 200 && response.type === 'basic') {
-            const copy = response.clone();
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req)
+        .then((resp) => {
+          const copy = resp.clone();
+          // Mettre en cache les ressources même origine
+          if (resp && resp.status === 200 && req.url.startsWith(self.location.origin)) {
             caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
           }
-          return response;
+          return resp;
         })
-        .catch(() => cached); // hors ligne et non caché -> renvoyer le cache si dispo
-      return cached || networkFetch;
+        .catch(() => {
+          // Ressource manquante en mode hors ligne
+          if (req.mode === 'navigate') return caches.match('./index.html');
+          return new Response('', { status: 404, statusText: 'Offline' });
+        });
     })
   );
 });
 
-// Permet à la page de demander la mise à jour du SW
+/* Message de mise à jour de version de cache */
 self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
