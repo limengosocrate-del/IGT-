@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0B2F6B">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Vérification d'un ordre de mission de l'Inspection Générale du Travail — RDC">
+  <title>Vérifier un ordre de mission — IGT RDC</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Éléments spécifiques à la page de vérification */
+    .verif-cadre {
+      border: 1px solid var(--gris-200);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 16px;
+      text-align: left;
+    }
+    .verif-cadre[data-statut="valide"] { border-color: var(--vert); }
+    .verif-cadre[data-statut="inconnu"] { border-color: var(--rouge); }
+    .verif-entete {
+      padding: 14px 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .verif-cadre[data-statut="valide"] .verif-entete { background: var(--vert-bg); color: #0f5c33; }
+    .verif-cadre[data-statut="inconnu"] .verif-entete { background: var(--rouge-bg); color: #7c121b; }
+    .verif-corps { padding: 6px 18px 14px; }
+    .verif-ligne {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--gris-200);
+      font-size: .94rem;
+    }
+    .verif-ligne:last-child { border-bottom: none; }
+    .verif-ligne .k { color: var(--gris-500); white-space: nowrap; }
+    .verif-ligne .v { font-weight: 600; color: var(--gris-900); text-align: right; overflow-wrap: anywhere; }
+    .verif-numero { font-family: "Consolas", "Menlo", monospace; font-size: 1.05rem; color: var(--bleu-700); }
+    #scan-video {
+      width: 100%;
+      border-radius: 12px;
+      background: #000;
+      margin-top: 14px;
+      display: none;
+    }
+    .verif-retour { margin-top: 16px; }
+    .verif-retour a { font-size: .9rem; font-weight: 600; }
+  </style>
+</head>
+<body class="page-login">
+
+  <main class="login-wrap">
+    <section class="login-card" aria-labelledby="titre-verif">
+      <div class="login-bande" aria-hidden="true">
+        <span class="b-bleu"></span><span class="b-jaune"></span><span class="b-rouge"></span>
+      </div>
+
+      <header class="login-entete">
+        <img class="login-logo-img" src="assets/img/logo-igt.png"
+             alt="République Démocratique du Congo — Inspection Générale du Travail"
+             width="640" height="144" fetchpriority="high">
+      </header>
+
+      <h1 class="login-title" id="titre-verif" style="font-size:clamp(1.25rem,5.4vw,1.6rem)">
+        Vérification d'un ordre de mission
+      </h1>
+      <p class="login-sub">
+        Saisissez le numéro de l'ordre (ex. <strong>OM-IGT-2026-000001</strong>)<br>
+        ou scannez le QR Code figurant sur le document.
+      </p>
+
+      <form id="form-verif" novalidate>
+        <div class="field">
+          <label for="numero">Numéro de l'ordre ou contenu du QR Code</label>
+          <input class="input" type="text" id="numero" name="numero"
+                 autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false"
+                 inputmode="text" placeholder="OM-IGT-2026-000001" required>
+        </div>
+
+        <div id="verif-erreur" class="alerte alerte--rouge" style="display:none" role="alert">
+          <span class="ico" aria-hidden="true">⛔</span><span></span>
+        </div>
+
+        <button type="submit" class="btn btn--lg btn--block btn--connexion" id="btn-verif">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">Vérifier l'ordre</span>
+        </button>
+
+        <button type="button" class="btn btn--lg btn--block btn--blanc" id="btn-scan"
+                style="margin-top:10px; display:none;">
+          <span class="btn-label">📷 Scanner le QR Code avec la caméra</span>
+        </button>
+      </form>
+
+      <video id="scan-video" playsinline muted aria-label="Flux caméra pour la lecture du QR Code"></video>
+
+      <div id="verif-resultat" aria-live="polite"></div>
+
+      <p class="verif-retour"><a href="index.html">← Retour à la connexion</a></p>
+
+      <footer class="login-footer">
+        © Créé par Inspecteur Limengo Daniel (Pmiller) — 2026
+      </footer>
+    </section>
+  </main>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/entreprises.js"></script>
+  <script src="js/agents.js"></script>
+  <script src="js/equipes.js"></script>
+  <script src="js/missions.js"></script>
+  <script src="js/ordres.js"></script>
+  <script>
+    (async () => {
+      try {
+        await DB.initialiser();
+      } catch (e) {
+        console.error(e);
+        Utils.toast("Impossible d'initialiser la base locale : " + e.message, 'erreur', 8000);
+      }
+
+      const $ = (id) => document.getElementById(id);
+      const champ = $('numero');
+      const zoneErr = $('verif-erreur');
+      const zoneRes = $('verif-resultat');
+      const btnVerif = $('btn-verif');
+      const btnScan = $('btn-scan');
+      const video = $('scan-video');
+      let fluxCamera = null;
+      let scanActif = false;
+
+      const afficherErreur = (msg) => {
+        zoneErr.querySelector('span:last-child').textContent = msg;
+        zoneErr.style.display = 'flex';
+      };
+
+      /** Extrait le numéro d'ordre d'un contenu QR (VERIF:OM-IGT-...|IGT-RDC) ou d'une saisie libre. */
+      function extraireNumero(texte) {
+        let t = String(texte || '').trim().toUpperCase();
+        const m = t.match(/OM-IGT-\d{4}-\d{6}/);
+        return m ? m[0] : t;
+      }
+
+      function statutBadge(statut) {
+        const map = {
+          VALIDE: ['✅ Ordre authentique — valide', 'valide'],
+          IMPRIME: ['✅ Ordre authentique — document émis', 'valide'],
+          ARCHIVE: ['⚠️ Ordre authentique — archivé', 'valide']
+        };
+        return map[statut] || ['✅ Ordre authentique', 'valide'];
+      }
+
+      async function verifier(saisie) {
+        zoneErr.style.display = 'none';
+        zoneRes.innerHTML = '';
+        const numero = extraireNumero(saisie);
+        if (!numero) {
+          afficherErreur("Veuillez saisir un numéro d'ordre ou scanner un QR Code.");
+          return;
+        }
+
+        await Utils.avecChargement(btnVerif, async () => {
+          try {
+            const ordre = await Ordres.parNumero(numero);
+            if (!ordre) {
+              zoneRes.innerHTML = `
+                <div class="verif-cadre" data-statut="inconnu">
+                  <div class="verif-entete">⛔ Ordre introuvable</div>
+                  <div class="verif-corps">
+                    <div class="verif-ligne"><span class="k">Numéro recherché</span>
+                      <span class="v verif-numero">${Utils.esc(numero)}</span></div>
+                    <p style="margin:10px 0 2px; font-size:.9rem; color:#7c121b">
+                      Aucun ordre de mission ne correspond à ce numéro dans le registre de l'Inspection
+                      Générale du Travail. Le document pourrait être falsifié ou provenir d'un autre appareil.
+                    </p>
+                  </div>
+                </div>`;
+              return;
+            }
+
+            const mission = ordre.missionId ? await Missions.parId(ordre.missionId) : null;
+            let nbEntreprises = 0;
+            let lieu = '—', debut = '—', fin = '—', refMission = '—';
+            if (mission) {
+              refMission = mission.reference || '—';
+              lieu = mission.lieu || '—';
+              debut = mission.dateDebut ? Utils.fmtDate(mission.dateDebut) : '—';
+              fin = mission.dateFin ? Utils.fmtDate(mission.dateFin) : '—';
+              const ents = await Missions.entreprisesDeMission(mission.id);
+              nbEntreprises = ents.length;
+            }
+            const [titre, stat] = statutBadge(ordre.statut);
+
+            zoneRes.innerHTML = `
+              <div class="verif-cadre" data-statut="${stat}">
+                <div class="verif-entete">${titre}</div>
+                <div class="verif-corps">
+                  <div class="verif-ligne"><span class="k">Numéro d'ordre</span>
+                    <span class="v verif-numero">${Utils.esc(ordre.numero)}</span></div>
+                  <div class="verif-ligne"><span class="k">Mission</span>
+                    <span class="v">${Utils.esc(refMission)}</span></div>
+                  <div class="verif-ligne"><span class="k">Lieu</span>
+                    <span class="v">${Utils.esc(lieu)}</span></div>
+                  <div class="verif-ligne"><span class="k">Période</span>
+                    <span class="v">${debut} → ${fin}</span></div>
+                  <div class="verif-ligne"><span class="k">Entreprises concernées</span>
+                    <span class="v">${nbEntreprises}</span></div>
+                  <div class="verif-ligne"><span class="k">Émis le</span>
+                    <span class="v">${ordre.dateCreation ? Utils.fmtDate(ordre.dateCreation) : '—'}</span></div>
+                </div>
+              </div>`;
+          } catch (err) {
+            afficherErreur((err && err.message) ||
+              "La vérification est impossible pour le moment. Réessayez.");
+          }
+        });
+      }
+
+      $('form-verif').addEventListener('submit', (e) => {
+        e.preventDefault();
+        arreterScan();
+        verifier(champ.value);
+      });
+
+      /* ---------- Scan caméra (BarcodeDetector — Chrome/Edge/Samsung Internet) ---------- */
+      function scanPrisEnCharge() {
+        return 'BarcodeDetector' in window && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+      }
+
+      async function demarrerScan() {
+        if (scanActif) { arreterScan(); return; }
+        try {
+          fluxCamera = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' }, audio: false
+          });
+          video.srcObject = fluxCamera;
+          video.style.display = 'block';
+          await video.play();
+          scanActif = true;
+          btnScan.querySelector('.btn-label').textContent = '⏹ Arrêter le scan';
+
+          const detecteur = new window.BarcodeDetector({ formats: ['qr_code'] });
+          const boucle = async () => {
+            if (!scanActif) return;
+            try {
+              const codes = await detecteur.detect(video);
+              if (codes && codes.length && codes[0].rawValue) {
+                champ.value = codes[0].rawValue;
+                arreterScan();
+                verifier(codes[0].rawValue);
+                return;
+              }
+            } catch (_) { /* frame illisible, on continue */ }
+            requestAnimationFrame(boucle);
+          };
+          boucle();
+        } catch (err) {
+          arreterScan();
+          Utils.toast("Caméra indisponible. Saisissez le numéro manuellement.", 'erreur', 5000);
+        }
+      }
+
+      function arreterScan() {
+        scanActif = false;
+        if (fluxCamera) {
+          fluxCamera.getTracks().forEach((t) => t.stop());
+          fluxCamera = null;
+        }
+        video.style.display = 'none';
+        btnScan.querySelector('.btn-label').textContent = '📷 Scanner le QR Code avec la caméra';
+      }
+
+      if (scanPrisEnCharge()) btnScan.style.display = 'inline-flex';
+      btnScan.addEventListener('click', demarrerScan);
+
+      // Pré-remplissage depuis un lien ?numero=OM-IGT-...
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('numero')) {
+        champ.value = params.get('numero');
+        verifier(champ.value);
+      }
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('service-worker.js').catch(() => {});
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a326e">
+  <meta name="description" content="Système de gestion et de planification des missions — Inspection Générale du Travail RDC">
+  <title>Tableau de bord — IGT Missions RDC</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+  <div class="layout">
+    <!-- ===================== BARRE LATÉRALE ===================== -->
+    <aside class="sidebar" id="sidebar" aria-label="Navigation principale">
+      <div class="sidebar-brand">
+        <div class="logo-mini" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="28" height="28">
+            <circle cx="32" cy="32" r="29" fill="none" stroke="#ffffff" stroke-width="3"/>
+            <polygon fill="#fed000" points="32,16 35.3,27.2 47,27.2 37.5,34.1 41.2,45.3 32,38.6 22.8,45.3 26.5,34.1 17,27.2 28.7,27.2"/>
+          </svg>
+        </div>
+        <div class="btxt">
+          <div class="t1">IGT Missions</div>
+          <div class="t2">RÉP. DÉM. DU CONGO</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="menu-navigation">
+        <div class="nav-groupe">Pilotage</div>
+        <button class="nav-item actif" data-module="dashboard"><span class="ico">📊</span> Tableau de bord</button>
+        <div class="nav-groupe">Planification</div>
+        <button class="nav-item" data-module="missions"><span class="ico">🗂️</span> Missions</button>
+        <button class="nav-item" data-module="ordres"><span class="ico">📄</span> Ordres de mission</button>
+        <button class="nav-item" data-module="calendrier"><span class="ico">📅</span> Calendrier</button>
+        <div class="nav-groupe">Référentiels</div>
+        <button class="nav-item" data-module="entreprises"><span class="ico">🏢</span> Entreprises</button>
+        <button class="nav-item" data-module="agents"><span class="ico">👥</span> Agents</button>
+        <button class="nav-item" data-module="equipes"><span class="ico">🧑‍🤝‍🧑</span> Équipes</button>
+        <div class="nav-groupe">Suivi</div>
+        <button class="nav-item" data-module="historique"><span class="ico">🕘</span> Historique</button>
+        <button class="nav-item" data-module="statistiques"><span class="ico">📈</span> Statistiques</button>
+        <button class="nav-item" data-module="archives"><span class="ico">🗃️</span> Archives</button>
+        <button class="nav-item" data-module="alertes"><span class="ico">🔔</span> Alertes <span class="nav-badge" id="badge-alertes" style="display:none">0</span></button>
+        <div class="nav-groupe">Système</div>
+        <button class="nav-item" data-module="parametres"><span class="ico">⚙️</span> Paramètres</button>
+        <button class="nav-item" data-module="journal"><span class="ico">📝</span> Journal</button>
+        <button class="nav-item" data-module="deconnexion"><span class="ico">🚪</span> Déconnexion</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        Mode de stockage :<br><b style="color:#fed000">Local sur cet appareil</b>
+      </div>
+    </aside>
+    <div class="sidebar-voile" id="sidebar-voile"></div>
+
+    <!-- ===================== ZONE PRINCIPALE ===================== -->
+    <div class="main">
+      <header class="topbar">
+        <button class="hamburger" id="btn-hamburger" aria-label="Ouvrir le menu">☰</button>
+        <h1 id="titre-page">Tableau de bord
+          <small>Système de gestion et de planification des missions — IGT RDC</small>
+        </h1>
+        <div class="topbar-actions">
+          <span class="net-indicator" id="indicateur-reseau" title="État de la connexion">
+            <span class="point"></span><span id="texte-reseau">En ligne</span>
+          </span>
+          <button class="btn-cloche" id="btn-cloche" aria-label="Centre de notifications" title="Notifications">
+            🔔<span class="nb" id="badge-cloche" style="display:none">0</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="content" id="contenu-module">
+        <!-- Le module actif est rendu ici par app.js -->
+      </div>
+
+      <footer class="footer-dev">
+        Créé par <b>Inspecteur Limengo Daniel (Pmiller) 2026</b>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Conteneur des modales -->
+  <div id="conteneur-modales"></div>
+  <!-- Conteneur des toasts -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Zone d'impression (cachée à l'écran, visible en impression) -->
+  <div id="zone-impression" class="zone-impression" aria-hidden="true"></div>
+
+  <!-- Scripts : ordre de chargement respecté (modules dépendants en dernier) -->
+  <script src="js/utils.js"></script>
+  <script src="js/vendor/qrcode-generator.js"></script>
+  <script src="js/qrcode.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/entreprises.js"></script>
+  <script src="js/agents.js"></script>
+  <script src="js/equipes.js"></script>
+  <script src="js/missions.js"></script>
+  <script src="js/ordres.js"></script>
+  <script src="js/historique.js"></script>
+  <script src="js/statistiques.js"></script>
+  <script src="js/parametres.js"></script>
+  <script src="js/import-export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
