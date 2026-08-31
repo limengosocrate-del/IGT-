@@ -1,98 +1,56 @@
-/* =====================================================================
-   IGT MISSIONS RDC — Feuille d'impression (A4)
-   Masque l'interface : sidebar, topbar, boutons, modales, etc.
-   N'affiche que le document #zone-impression (l'ordre de mission).
-   ===================================================================== */
-
+/* ==========================================================================
+   IGT MISSIONS RDC — print.css — Impression officielle A4 / Registre
+   ========================================================================== */
 @page {
-  size: A4;
-  margin: 12mm 14mm;
+  size: A4 portrait;
+  margin: 0;
 }
+@media print {
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+  body { color: #000; font-size: 11.5pt; }
 
-* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  /* Masquer toute l'interface applicative */
+  .sidebar, .topbar, .no-print, #toasts, .editor-toolbar, .tabs, .etat-bar,
+  .toolbar, .a4-stage, .preview-toolbar, .user-menu, .sb-backdrop {
+    display: none !important;
+  }
+  .content { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+  #print-root { display: block !important; }
 
-body {
-  background: #fff !important;
-}
-body::before { display: none !important; }
+  .print-sheet {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 18mm 20mm 16mm !important;
+    color: #000 !important;
+    background: #fff !important;
+    font-family: "Times New Roman", Times, serif !important;
+    font-size: 11.5pt;
+  }
+  .print-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-sheet table { border-collapse: collapse; width: 100% !important; background: #fff !important; }
+  .print-sheet table td, .print-sheet table th { border: 1px solid #000 !important; padding: 4px 7px; }
+  .print-sheet img { max-width: 100%; }
+  .print-sheet .doc-head { text-align: center; }
+  .print-sheet h1, .print-sheet h2, .print-sheet h3 { color: #000 !important; }
+  .print-sheet ul, .print-sheet ol { padding-left: 1.5em; }
 
-/* Tout masquer… */
-.sidebar,
-.topbar,
-.content > *:not(.zone-impression),
-.toolbar,
-.card:not(.carte-impression),
-.modal-overlay,
-#toast-container,
-.sidebar-voile,
-.net-indicator,
-.boutons-impression,
-.nav,
-.footer-dev,
-.btn,
-.tabs {
-  display: none !important;
-}
+  /* Ne jamais couper tableaux / signatures */
+  .print-sheet table, .print-sheet .sign, .print-sheet .objet-block, .print-sheet .no-split {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .page-break { display: block; page-break-before: always; break-before: page; }
 
-.layout { display: block !important; }
-.main { display: block !important; }
-.content { padding: 0 !important; max-width: none !important; }
-
-/* …sauf la zone d'impression */
-.zone-impression {
-  position: static !important;
-  display: block !important;
+  /* Barre graphique RDC */
+  .print-sheet .rdc-bar { height: 7px !important; border-radius: 0 !important; margin: 22px 0 6px !important;
+    background: linear-gradient(90deg, #0072C6 0 30%, #0B2E6D 30% 70%, #CE1126 70% 88%, #FCD116 88% 100%) !important; }
+  .print-sheet .print-blue-line { height: 3px !important; background: #0072C6 !important; border: none !important; }
+  .print-sheet .adress { text-align: center; font-size: 10pt; }
+  .print-sheet .sign { margin-top: 30px !important; }
+  @page { size: A4; margin: 0; }
 }
-
-.zone-impression .a4 {
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  max-width: none !important;
-  width: 100% !important;
-  aspect-ratio: auto !important;
-}
-.zone-impression .a4 .page {
-  padding: 0 !important;
-  height: auto !important;
-  overflow: visible !important;
-  font-size: 11.5pt !important;
-  color: #000 !important;
-}
-
-/* Style du document imprimé */
-.om-doc { font-family: "Times New Roman", Times, serif; }
-.om-doc .om-entete { text-align: center; margin-bottom: 6mm; }
-.om-doc .om-titre {
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 13pt;
-  margin: 4mm 0;
-  text-decoration: underline;
-}
-.om-doc .om-numero { text-align: center; font-weight: bold; font-size: 10.5pt; margin-bottom: 5mm; }
-.om-doc .om-intro { text-align: justify; margin-bottom: 4mm; text-indent: 8mm; }
-.om-doc .om-liste-agents { margin: 3mm 0 4mm 10mm; }
-.om-doc .om-section-titre {
-  text-transform: uppercase;
-  font-weight: bold;
-  text-decoration: underline;
-  margin: 3.5mm 0 2mm;
-}
-.om-doc .objet-items { margin: 0 0 3mm 8mm; padding: 0; }
-.om-doc .objet-items li { margin-bottom: 1.8mm; text-align: justify; }
-.om-doc .om-infos { margin: 3mm 0; }
-.om-doc .om-infos p { margin: 1.2mm 0; }
-.om-doc .om-formule { text-align: justify; margin: 4mm 0 8mm; }
-.om-doc .om-signature { margin-top: 6mm; text-align: left; }
-.om-doc .om-signataire { font-weight: bold; text-transform: uppercase; }
-.om-doc .om-fonction { font-size: 9.5pt; margin-top: 0.5mm; }
-.om-doc .om-pied {
-  position: fixed;
-  bottom: 4mm; left: 0; right: 0;
-  text-align: center;
-  font-size: 7.5pt;
-  color: #444;
-  font-family: "Segoe UI", Arial, sans-serif;
-}
-.om-doc .om-qr { position: absolute; bottom: 12mm; right: 0; }
+#print-root { display: none; }
+#print-root.visible { display: block; }
