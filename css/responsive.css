@@ -1,0 +1,119 @@
+/* =====================================================================
+   IGT MISSIONS RDC — Responsive (mobile-first, breakpoints 320→1920)
+   ===================================================================== */
+
+/* ---- Grand écran : aération ---- */
+@media (min-width: 1500px) {
+  .content { padding: 28px 40px; max-width: 1600px; margin: 0 auto; width: 100%; }
+}
+
+/* ---- Tablette : sidebar réduite ---- */
+@media (max-width: 1024px) {
+  :root { --sidebar-l: 220px; }
+  .sidebar-brand .btxt .t2 { display: none; }
+  .stats-grid { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+  .editeur-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- Mobile / tablette étroite : sidebar en tiroir ---- */
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+
+  .topbar .hamburger { display: inline-flex; }
+
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: min(300px, 84vw);
+    transform: translateX(-105%);
+    transition: transform .28s cubic-bezier(.3,.8,.3,1);
+    height: 100vh;
+  }
+  .sidebar.ouverte { transform: translateX(0); }
+  .sidebar-voile {
+    position: fixed; inset: 0;
+    background: rgba(6,20,45,.55);
+    z-index: 550;
+    display: none;
+  }
+  .sidebar-voile.visible { display: block; animation: fadeIn .2s ease; }
+
+  .content { padding: 16px 14px; }
+  .topbar { padding: 10px 14px; }
+  .topbar h1 { font-size: .92rem; }
+  .topbar h1 small { display: none; }
+
+  /* Tableaux → cartes */
+  .table-wrap { overflow-x: visible; }
+  table.data, table.data thead, table.data tbody, table.data tr, table.data th, table.data td {
+    display: block;
+    width: 100%;
+  }
+  table.data thead { display: none; }
+  table.data tr {
+    background: #fff;
+    border: 1px solid var(--gris-200);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 6px 4px;
+    box-shadow: var(--ombre-douce);
+  }
+  table.data td {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    padding: 9px 14px;
+    border-bottom: 1px dashed var(--gris-200);
+    text-align: right;
+  }
+  table.data td:last-child { border-bottom: none; }
+  table.data td::before {
+    content: attr(data-label);
+    font-weight: 800;
+    color: var(--bleu-700);
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    text-align: left;
+    flex: 0 0 42%;
+  }
+  table.data td .row-actions { justify-content: flex-end; }
+
+  /* Calendrier plus compact */
+  .cal-jour { min-height: 52px; padding: 3px; }
+  .cal-evenement { font-size: .58rem; padding: 1px 3px; }
+  .cal-jour .num { font-size: .7rem; }
+
+  /* Modales pleine largeur */
+  .modal { max-width: 100%; max-height: 94vh; }
+  .modal-body { padding: 14px; }
+
+  /* Editeur empilé géré plus haut ; A4 réduit */
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ---- Très petits écrans (320–390 px) ---- */
+@media (max-width: 400px) {
+  body { font-size: 14.5px; }
+  .login-card { padding: 24px 18px 20px; }
+  .login-title { font-size: .95rem; }
+  .btn { padding: 10px 14px; font-size: .84rem; }
+  .stat-card { padding: 13px; gap: 10px; }
+  .stat-card .s-ico { width: 40px; height: 40px; flex-basis: 40px; font-size: 1.25rem; }
+  .stat-card .s-val { font-size: 1.4rem; }
+  .toolbar { gap: 8px; }
+  .ent-ligne { grid-template-columns: 28px 1fr; }
+  .ent-ligne .badge, .ent-ligne .row-actions { grid-column: 2; justify-self: start; }
+  .cal-jour-tete { font-size: .62rem; }
+  .cal-jour { min-height: 42px; }
+  #toast-container { left: 12px; right: 12px; max-width: none; }
+}
+
+/* ---- Ajustement paysage téléphone ---- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .login-wrap { padding: 10px; }
+  .login-card { padding: 16px 20px; }
+  .login-logo { width: 56px; height: 56px; margin-bottom: 6px; }
+  .modal { max-height: 98vh; }
+}
