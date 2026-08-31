@@ -1,46 +1,40 @@
-/* =====================================================================
-   audit.js — Journal de traçabilité (qui a fait quoi et quand).
-   Enregistre : date, heure, action, module, objet, ancienne/nouvelle donnée.
-   Aucune suppression du journal n'est proposée dans l'interface.
-   ===================================================================== */
+/* ==========================================================================
+   IGT MISSIONS RDC — audit.js — Journal d'audit (traçabilité)
+   Actions : LOGIN LOGOUT CREATE UPDATE ARCHIVE VALIDATE PRINT IMPORT EXPORT
+   ========================================================================== */
+'use strict';
 
-const Audit = (() => {
+const AUDIT = (() => {
+  const S = 'auditLogs';
 
-  /**
-   * Enregistre une entrée au journal.
-   * @param {string} action ex : CRÉATION, MODIFICATION, ARCHIVAGE, VALIDATION...
-   * @param {string} module ex : Entreprises, Missions, Ordres...
-   * @param {string} objet description de l'objet concerné
-   * @param {*} ancienneDonnee
-   * @param {*} nouvelleDonnee
-   * @param {string} details commentaire libre
-   */
-  async function enregistrer(action, module, objet, ancienneDonnee = null, nouvelleDonnee = null, details = '') {
-    const maintenant = new Date();
-    const entree = {
-      id: Utils.uid('log'),
-      date: maintenant.toISOString(),
-      action: String(action).toUpperCase(),
-      module: module || '—',
-      objet: objet || '—',
-      ancienneDonnee: ancienneDonnee === undefined ? null : ancienneDonnee,
-      nouvelleDonnee: nouvelleDonnee === undefined ? null : nouvelleDonnee,
-      details: details || ''
-    };
+  async function log(type, module, objet, utilisateur, extra) {
     try {
-      await DB.ajouter('auditLogs', entree);
-    } catch (e) {
-      // Le journal ne doit jamais bloquer une opération métier.
-      console.warn('Journal indisponible :', e);
+      const entry = {
+        id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        type, module: module || '', objet: objet || '', utilisateur: utilisateur || 'admin',
+        date: Utils.todayISO(), heure: Utils.nowTime(), dateTime: Utils.nowStamp(),
+        identifiant: (extra && extra.reference) || (extra && extra.id) || '', extra: extra || {}
+      };
+      await DB.put(S, entry);
+      return entry;
+    } catch (e) { // l'audit ne doit jamais bloquer l'action principale
+      return null;
     }
-    return entree;
   }
 
-  /** Toutes les entrées, plus récentes d'abord. */
-  async function lister() {
-    const logs = await DB.tout('auditLogs');
-    return logs.sort((a, b) => (a.date < b.date ? 1 : -1));
+  async function getAll() {
+    let list = await DB.getAll(S);
+    list.sort((a, b) => String(b.dateTime).localeCompare(String(a.dateTime)));
+    return list;
+  }
+  async function filter(q, opts) {
+    let list = await getAll();
+    if (q) { const n = Utils.norm(q); list = list.filter((x) => Utils.norm([x.type, x.module, x.objet, x.utilisateur].join(' ')).includes(n)); }
+    if (opts && opts.type) list = list.filter((x) => x.type === opts.type);
+    if (opts && opts.module) list = list.filter((x) => x.module === opts.module);
+    if (opts && opts.date) list = list.filter((x) => x.date === opts.date);
+    return list;
   }
 
-  return { enregistrer, lister };
+  return { log, getAll, filter };
 })();
